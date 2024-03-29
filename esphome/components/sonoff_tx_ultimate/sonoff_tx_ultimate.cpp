@@ -133,6 +133,7 @@ bool SonoffTXUltimate::read_command_(TouchEvent &event) {
   TouchEventFooter *footer;
   uint16_t crc16_actual;
   bool success = false;
+  const char *event_name;
 
   // Read header
   if (!this->read_array((uint8_t *)&buf[buf_len], sizeof(*header))) {
@@ -188,15 +189,18 @@ bool SonoffTXUltimate::read_command_(TouchEvent &event) {
   case HEADER_DATA_LEN_RELEASE:
     event.ch = data->len_1.ch;
     event.state = false;
+    event_name = "Release (type 1)";
     break;
   case HEADER_DATA_LEN_PRESS_RELEASE:
     event.ch = data->len_2.ch;
     event.state = (data->len_2.release_event ? false : true);
+    event_name = (data->len_2.release_event ? "Release (type 2)" : "Press");
     break;
   case HEADER_DATA_LEN_SWIPE:
     /* Swipe left/right event, always a release */
     event.ch = data->len_3.ch;
     event.state = false;
+    event_name = "Swipe";
     break;
   default:
     goto error;
@@ -211,6 +215,9 @@ bool SonoffTXUltimate::read_command_(TouchEvent &event) {
   if (event.ch & CH_RELEASE_TIMEOUT) {
     event.ch &= ~CH_RELEASE_TIMEOUT;
   }
+
+  ESP_LOGV(TAG, "[%04u] %s; ch=%u",
+           this->read_count_, event_name, event.ch);
 
   success = true;
   goto done;
