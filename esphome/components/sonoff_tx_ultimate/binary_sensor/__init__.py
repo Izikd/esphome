@@ -5,6 +5,7 @@ from esphome.components import binary_sensor
 from .. import SonoffTXUltimate, sonoff_tx_ultimate_ns, CONF_SONOFF_TX_ULTIMATE_ID
 
 CONF_CHANNELS = "channels"
+CONF_PRESS_ONLY = "press_only"
 
 DEPENDENCIES = ["sonoff_tx_ultimate"]
 
@@ -16,7 +17,7 @@ CONFIG_SCHEMA = binary_sensor.binary_sensor_schema(SonoffTXUltimateTouchBinarySe
         cv.Required(CONF_CHANNELS): cv.ensure_list(
             cv.int_range(min=1, max=13)
         ),
-        # cv.Required(CONF_ROW): cv.int_range(min=0, max=7),
+        cv.Optional(CONF_PRESS_ONLY, default=False): cv.boolean,
     }
 )
 
@@ -26,5 +27,7 @@ async def to_code(config):
 
     for _, ch in enumerate(config[CONF_CHANNELS]):
         cg.add(var.add_channel(ch))
+
+    cg.add(var.press_only_set(config[CONF_PRESS_ONLY]))
 
     cg.add(SonoffTXUltimate.register_touch_binary_sensor(var))

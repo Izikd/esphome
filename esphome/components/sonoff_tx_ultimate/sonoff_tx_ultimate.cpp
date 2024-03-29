@@ -233,9 +233,20 @@ done:
 }
 
 void SonoffTXUltimate::process_command_(const TouchEvent &event) {
+  bool press_and_release = false;
+
+  if (event.ch > SonoffTXUltimateTouchBinarySensor::CH_MAX) {
+    press_and_release = true;
+  }
+
   for (auto *touch_binary_sensor : this->touch_binary_sensors_) {
-    if (event.ch > SonoffTXUltimateTouchBinarySensor::CH_MAX) {
-      /* There is no 'press' event on these, but only 'release' event; so we need to emulate it */
+    /*
+     * On high channels: there is no 'press' event on these, but only 'release' event;
+     * so we need to emulate it.
+     * On press_only mode: we ignore the 'release' event, so we emulate both events.
+     */
+    if ((event.ch > SonoffTXUltimateTouchBinarySensor::CH_MAX) ||
+        (touch_binary_sensor->press_only_get() && (event.state == true))) {
       touch_binary_sensor->process(event.ch, true);
       touch_binary_sensor->process(event.ch, false);
     } else {

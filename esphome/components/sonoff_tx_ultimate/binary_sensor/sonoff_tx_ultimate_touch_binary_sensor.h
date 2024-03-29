@@ -29,8 +29,16 @@ class SonoffTXUltimateTouchBinarySensor : public binary_sensor::BinarySensor {
   static const uint8_t CH_LONG_MIN =    0x11;
   static const uint8_t CH_LONG_MAX =    0x1A;
 
-  void add_channel(uint8_t ch) { 
+  void add_channel(uint8_t ch) {
     this->channels_bitmap |= (1U << ch);
+  }
+
+  void press_only_set(bool press_only) {
+    this->press_only_ = press_only;
+  }
+
+  bool press_only_get() {
+    return this->press_only_;
   }
 
   void process(uint8_t ch, bool state) {
@@ -42,6 +50,7 @@ class SonoffTXUltimateTouchBinarySensor : public binary_sensor::BinarySensor {
 
  protected:
   uint32_t channels_bitmap{0};
+  bool press_only_;
 };
 
 }  // namespace sonoff_tx_ultimate
