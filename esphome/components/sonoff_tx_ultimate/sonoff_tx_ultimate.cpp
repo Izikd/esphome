@@ -224,9 +224,9 @@ bool SonoffTXUltimate::read_command_(TouchEvent &event) {
 
 error:
   success = false;
+  this->skip_command_();
 
 done:
-  this->skip_command_();
   this->read_count_++;
 
   return success;
