@@ -5,7 +5,7 @@
 namespace esphome {
 namespace sonoff_tx_ultimate {
 
-class SonoffTXUltimateTouchBinarySensor : public binary_sensor::BinarySensor {
+class SonoffTXUltimateTouchBinarySensor : public binary_sensor::BinarySensorInitiallyOff {
  public:
   /*
    * Channels
